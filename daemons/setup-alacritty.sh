@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Author: Abhishek Anand Amralkar
 # This script setsup Alacritty.
 CONFIG_DIR=${CONFIG_DIR:-"/home/aaa/.config/alacritty"}
@@ -22,7 +22,9 @@ get_alacritty () {
     then
        rm -rf /tmp/alacritty \
 
-       && git clone https://github.com/alacritty/alacritty.git /tmp/alacritty cd /tmp/alacritty \
+       cd /tmp/ \
+       && git clone https://github.com/alacritty/alacritty.git \
+       && cd /tmp/alacritty \
        && cargo build --release \
        && infocmp alacritty \
        && sudo tic -xe alacritty,alacritty-direct extra/alacritty.info \
@@ -30,8 +32,6 @@ get_alacritty () {
        && sudo cp extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg \
        && sudo desktop-file-install extra/linux/Alacritty.desktop \
        && sudo update-desktop-database \
-       && sudo mkdir -p /usr/local/share/man/man1 \
-       && sudo gzip -c extra/alacritty.man | sudo tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null \
        && sudo mkdir -p /usr/local/share/man/man1 \
        && sudo gzip -c extra/alacritty.man | sudo tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null \
        && mkdir -p ${ZDOTDIR:-~}/.zsh_functions \
