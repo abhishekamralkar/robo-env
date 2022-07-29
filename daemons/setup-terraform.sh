@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Author: Abhishek Anand Amralkar
 # This script installs Terraform
 
@@ -9,22 +8,28 @@ set -o nounset
 
 unset CDPATH
 CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-TF_BIN=${TF_BIN:-"/usr/local/bin/terraform"}
-URL="https://releases.hashicorp.com/terraform"
-#TF_VER="$(curl -sL $URL | grep -v beta | grep -Po "_(\d*\.?){3}" | sed 's/_//' | sort -V | tail -1)"
-TF_VER=0.13.6
-ZIP="terraform_${TF_VER}_linux_amd64.zip"
-INSTALL_DIR=${1:-/usr/local/bin}
+
+source ./helper-func.sh
+
+# Pick script location
+SETUP_DIR=$(pwd)
+package=$(get_script_name)
+get_release
+get_date
+
+TF_BIN=${TF_BIN:-"/usr/bin/terraform"}
 
 install_terraform (){
     if [ -e "${TF_BIN}" ];
      then
-        echo "Terraform is already installed"   
+        tf_ver=$(terraform -v | awk -F " " 'NR==1{print $2}')
+        echo "${package}: ${tf_ver} is already installed"   
     else
-        echo "Installing Terraform..."
-        sudo curl -s ${URL}/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip -o ${INSTALL_DIR}/${ZIP}
-        sudo unzip -o ${INSTALL_DIR}/$ZIP -d $INSTALL_DIR && sudo rm -v ${INSTALL_DIR}/$ZIP
-        echo "Done!"
+        install_started
+        sudo yum install -y yum-utils
+        sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+        sudo yum -y install terraform
+        install_completed
     fi
 }
 

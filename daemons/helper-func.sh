@@ -34,3 +34,11 @@ get_date() {
 get_script_name() {
     basename "$0" | awk -F '-' '{print $2}' | cut -f1 -d"."
 }
+
+get_retval() {
+    retVal=$?
+    if [ $retVal -ne 0 ]; then
+      echo "Error"
+    fi
+    exit $retVal
+}
