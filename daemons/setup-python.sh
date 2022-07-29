@@ -1,7 +1,6 @@
-#!//bin/bash
-
+#!/bin/bash
 # Author: Abhishek Anand Amralkar
-# This script installs Python Packages
+# This script installs python Packages
 
 set -o errexit
 set -o pipefail
@@ -10,19 +9,13 @@ set -o nounset
 unset CDPATH
 CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+source ./helper-func.sh
+
 # Pick script location
 SETUP_DIR=$(pwd)
-os_release=$(cat /etc/os-release | awk -F '=' '/^NAME/{print $2}' | awk '{print $1}' | tr -d '"')
-now=$(date +"%d-%m-%Y-%H-%M-%S")
-package='Python'
-
-install_started() {
-    echo "${os_release} ${package} package installation started at ${now}!"
-}
-
-install_completed() {
-    echo "${os_release} ${package} package installation finished at ${now}!"
-}
+package=$(get_script_name)
+get_release
+get_date
 
 install_python_packages() {
     if [ -f /etc/redhat-release ]; then 
