@@ -27,7 +27,6 @@ install_python_packages() {
     sudo apt-get install python3-dev -y 1> /dev/null
     install_completed
     fi
-
 }
 
 main() {
