@@ -2,31 +2,38 @@
 # Author: Abhishek Anand Amralkar
 # Shell (zsh) and syntax highlighting
 
+set -o errexit
+set -o pipefail
+set -o nounset
+
 unset CDPATH
-#CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source ./helper-func.sh
+
+# Pick script location
+SETUP_DIR=$(pwd)
+package=$(get_script_name)
+get_release
+get_date
+
 ZSH_BIN=${ZSH_BIN:-"/usr/bin/zsh"}
 
-install_zsh () {
+install_plugins () {
     if [  -e "$ZSH_BIN" ];
     then
-      sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-      git clone git://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-      git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
-      git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-      ./setup-fzf.sh
-      git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-      sudo rm -rf ~/.zshrc
-      cd /tmp && wget https://raw.githubusercontent.com/abhishekamralkar/configs/master/ohmyzsh/zshrc
-      mv /tmp/zshrc ~/.zshrc
-      sudo chsh -s /bin/zsh
-
-    else
+      git clone git://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
+      git clone https://github.com/zsh-users/zsh-completions ~/.zsh/zsh-completions
+      git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+      git clone --depth 1 https://github.com/junegunn/fzf.git ~/.zsh/.fzf
+      ~/.zsh/.fzf/install
+    elif [ -d ~/.zsh/zsh-syntax-highlighting ] 
       echo "oh-my-zsh is installed ..."
     fi
 }
 
 main () {
-    install_zsh
+    install_plugins
 }
 
 main
