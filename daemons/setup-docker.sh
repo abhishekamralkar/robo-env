@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Author: Abhishek Anand Amralkar
 # This script installs Docker and Docker Compose
 
@@ -9,45 +8,53 @@ set -o nounset
 
 unset CDPATH
 CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-DOCKER_PATH=${DOCKER_PATH:-"/usr/bin/docker"}
-DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION:-"1.28.2"}
-DOCKER_COMPOSE_PATH=${DOCKER_COMPOSE_PATH:-"/home/aaa/System/Bin/docker-compose"}
-BIN_PATH=${BIN_PATH:-"/home/aaa/System/Bin/"}
 
-if [ ! -e ${BIN_PATH} ];
-then
-	mkdir -p ${BIN_PATH}
-else
-	echo ${BIN_PATH} "exists"
-fi
+source ./helper-func.sh
 
-USER_NAME=${USER_NAME:-"aaa"}
+# Pick script location
+SETUP_DIR=$(pwd)
+package=$(get_script_name)
+get_release
+get_date
 
 install_docker() {
-    if [ ! -e ${DOCKER_PATH} ];
-    then
-        echo "Installing Docker"
-        wget -qO- https://get.docker.com/ | sh
-        echo "Docker Installed"
-        echo "Add user in "
-        sudo usermod -a -G docker $USER_NAME
-    else
-        echo "Docker already installed"
+    if [ -f /etc/redhat-release ]; then
+    install_started
+    sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
+
+    sudo yum install -y yum-utils
+    
+    sudo yum-config-manager \
+    --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    
+    sudo yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    sudo systemctl start docker
+    install_completed
+    elif [ -f /etc/lsb-release]; then
+    install_started
+    sudo apt-get remove docker docker-engine docker.io containerd runc
+    sudo apt-get update
+    sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+    sudo mkdir -p /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    install_completed
     fi
-
-}
-
-install_dockercompose(){
-    if [ ! -e ${DOCKER_COMPOSE_PATH} ];
-    then
-        echo "Downloading Docker Compose"
-        sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /home/aaa/System/Bin/docker-compose
-        echo "Docker Compose installed"
-        echo "Change permission to execute"
-        sudo chmod +x /home/aaa/System/Bin/docker-compose
-    else
-        echo "Docker Compose already installed"
-        fi
 }
 
 main () {

@@ -17,7 +17,7 @@ package=$(get_script_name)
 get_release
 get_date
 
-common_packages=("vim" "emacs" "curl" "wget" "git" "tmux" "terminator" "make" "gcc" "perl" "unzip"  "zsh" "python3-pip" "htop" "rsync" "python3-setuptools")
+common_packages=("vim" "emacs" "curl" "wget" "git" "tmux" "terminator" "make" "gcc" "perl" "unzip" "rlwrap" "zsh" "python3-pip" "htop" "rsync" "python3-setuptools")
 
 install_common_package() {
     if [ -f /etc/redhat-release ]; then  

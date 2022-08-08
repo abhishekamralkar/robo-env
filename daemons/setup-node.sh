@@ -19,15 +19,17 @@ get_date
 NODE_BIN=${NODE_BIN:-"/usr/bin/node"}
 
 install_node () {
-    if [ ! -e "$NODE_BIN" ];
-    then
-        install_started
-        curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -                                                │
-        sudo apt-get install -y nodejs 
-        install_completed
-    else
-      echo "Node is already installed"
-      fi
+    if [ -f /etc/redhat-release ]; then 
+    install_started
+    curl -fsSL https://rpm.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo dnf install -y nodejs
+    install_completed
+    elif [ -f /etc/lsb-release ]; then
+    install_started
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    install_completed
+    fi
 }
 
 
