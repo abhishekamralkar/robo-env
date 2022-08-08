@@ -1,29 +1,36 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Author: Abhishek Anand Amralkar
-# This script setsup Java 11 from Adopt Java.
+# This script installs Java 
 
-sudo apt-get install -y wget apt-transport-https gnupg
+set -o errexit
+set -o pipefail
+set -o nounset
 
-if [ ! -e "public" ];
-then
-   wget https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
-else
-   echo "Public Key present"
-fi
+unset CDPATH
+CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-gpg --no-default-keyring --keyring ./adoptopenjdk-keyring.gpg --import public
-gpg --no-default-keyring --keyring ./adoptopenjdk-keyring.gpg --export --output adoptopenjdk-archive-keyring.gpg 
+source ./helper-func.sh
 
-rm adoptopenjdk-keyring.gpg
+# Pick script location
+SETUP_DIR=$(pwd)
+package=$(get_script_name)
+get_release
+get_date
 
-sudo mv adoptopenjdk-archive-keyring.gpg /usr/share/keyrings 
+install_java() {
+   if [ -f /etc/redhat-release ]; then
+   install_started
+   sudo yum install java java-devel -y
+   install_completed
+   elif [ -f /etc/lsb-release ]; then
+   install_started
+   sudo apt-get install openjdk -y
+   install_completed
+   fi
+}
 
-if [ ! -e "/etc/apt/sources.list.d/adoptopenjdk.list" ];
-then
-   echo "deb [signed-by=/usr/share/keyrings/adoptopenjdk-archive-keyring.gpg] https://adoptopenjdk.jfrog.io/adoptopenjdk/deb bullseye main" | sudo tee /etc/apt/sources.list.d/adoptopenjdk.list\n            
-else 
-   echo "Source file updated"
-fi
-sudo apt-get update -y
-sudo apt-get install adoptopenjdk-11-hotspot -y
-rm -rf adoptopenjdk-keyring.gpg\~ public
+main() {
+   install_java
+}
+
+main
