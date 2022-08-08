@@ -38,8 +38,17 @@ install_common_package() {
     fi
 }
 
-main() {
-    install_common_package
+get_fonts() {
+    if [ -d "nerd-fonts" ]; then
+    cd nerd-fonts && ./install.sh
+    else
+    git clone git@github.com:ryanoasis/nerd-fonts.git
+    cd nerd-fonts && ./install.sh
+    fi
+
 }
 
+main() {
+    get_fonts
+}
 main
