@@ -49,6 +49,7 @@ get_fonts() {
 }
 
 main() {
-    get_fonts
+    #get_fonts
+   install_common_package
 }
 main
