@@ -24,7 +24,7 @@ install_java() {
    install_completed
    elif [ -f /etc/lsb-release ]; then
    install_started
-   sudo apt-get install openjdk -y
+   sudo apt-get install default-jdk -y
    install_completed
    fi
 }
