@@ -28,7 +28,7 @@ install_common_package() {
         sudo dnf install ${pack} -y 1> /dev/null
     done
     install_completed
-    elif [ -f /etc/lsb-release ]; then
+    elif [ -f /etc/lsb-release ] || [ -f /etc/debian_version ]; then
     install_started
     sudo apt update && sudo apt-get upgrade -y 1> /dev/null
     for pack in ${common_packages[@]}; do
