@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Specify the Go version
-GO_VERSION="1.22.0"  # Change this to the desired Go version
+GO_VERSION="1.30.0"  # Change this to the desired Go version
 
 # Specify the installation directory
 INSTALL_DIR="/usr/local"
@@ -17,12 +17,12 @@ rm "go${GO_VERSION}.linux-amd64.tar.gz"
 
 # Set up environment variables
 echo "Setting up environment variables..."
-echo "export PATH=\$PATH:${INSTALL_DIR}/go/bin" >> ~/.bashrc
-echo "export GOPATH=\$HOME/go" >> ~/.bashrc
-echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.bashrc
+echo "export PATH=\$PATH:${INSTALL_DIR}/go/bin" >> ~/.zshrc
+echo "export GOPATH=\$HOME/go" >> ~/.zshrc
+echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.zshrc
 
 # Apply changes to the current shell session
-source ~/.bashrc
+source ~/.zshrc
 
 # Display Go version
 go version

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Author: Abhishek Anand Amralkar
 # Shell (zsh) and syntax highlighting
 
@@ -22,12 +22,14 @@ ZSH_BIN=${ZSH_BIN:-"/usr/bin/zsh"}
 install_plugins () {
     if [  -e "$ZSH_BIN" ];
     then
-      git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-      git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
-      git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-      git clone --depth 1 https://github.com/junegunn/fzf.git ~/.zsh/.fzf
-      git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-      ~/.zsh/.fzf/install
+      #git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
+      #git clone https://github.com/zsh-users/zsh-completions ~/.zsh/zsh-completions
+      #git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+      #git clone --depth 1 https://github.com/junegunn/fzf.git ~/.zsh/.fzf
+      git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git ~/.zsh
+      #curl -o ~/.zsh/fzf-git.sh https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh
+      #curl -o ~/.zsh/kubectl.plugin.sh https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/plugins/kubectl/kubectl.plugin.zsh
+      #~/.zsh/.fzf/install
     else [ -d ~/.zsh/zsh-syntax-highlighting ] 
       echo "oh-my-zsh is installed ..."
     fi
