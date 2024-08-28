@@ -37,6 +37,9 @@ main() {
     cargo install zoxide
     cargo install bat
     cargo install atuin
+    cargo install ripgrep
+    cargo install dust
+    cargo install git-delta
     echo "All selected Rust utilities have been installed."
 
     # Check if the binaries are in the system PATH
