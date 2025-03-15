@@ -40,6 +40,7 @@ main() {
     cargo install ripgrep
     cargo install dust
     cargo install git-delta
+    cargo install --locked serie
     echo "All selected Rust utilities have been installed."
 
     # Check if the binaries are in the system PATH
