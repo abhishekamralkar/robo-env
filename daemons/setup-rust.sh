@@ -38,9 +38,10 @@ main() {
     cargo install bat
     cargo install atuin
     cargo install ripgrep
-    cargo install dust
+    cargo install du-dust
     cargo install git-delta
     cargo install --locked serie
+    cargo install netscanner
 
     echo "All selected Rust utilities have been installed."
 
