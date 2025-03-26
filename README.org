@@ -1,9 +1,0 @@
-#+TITLE: =ROBO ENV=
-
-This repo is the home of my custom system configuration which enables a consistent computing experience across multiple machines.  
-
-I manage the various configuration files in this repo using [[https://www.gnu.org/software/stow/][GNU Stow]].  This allows me to set up symlinks for all of my dotfiles using a single command:
-
-#+BEGIN_SRC sh
-stow .
-#+END_SRC
