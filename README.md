@@ -29,6 +29,31 @@ robo-env/
 
 ---
 
+## Getting Started
+
+Follow these steps to quickly get started with **ROBO ENV**:
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/abhishekamralkar/robo-env.git
+   cd robo-env
+   ```
+
+2. **Check Prerequisites**:
+   Ensure you have a supported Linux distribution, administrative privileges (`sudo`), and Git installed.
+
+3. **Run Setup Scripts**:
+   Execute the desired setup scripts from the `daemons/` directory. For example:
+   ```bash
+   ./daemons/setup-chrome.sh
+   ./daemons/setup-docker.sh
+   ```
+
+4. **Customize as Needed**:
+   Modify environment variables or script parameters to suit your requirements (see the [Usage](#usage) section).
+
+---
+
 ## Prerequisites
 Before using the scripts in this repository, ensure the following:
 
