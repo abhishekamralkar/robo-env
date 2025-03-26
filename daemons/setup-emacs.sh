@@ -1,6 +1,6 @@
 #!/bin/bash
 # Author: Abhishek Anand Amralkar
-# This script clone the my emacs configuration on my machine.
+# This script clones my Emacs configuration onto my machine.
 
 set -o errexit
 set -o pipefail
@@ -17,34 +17,36 @@ package=$(get_script_name)
 get_release
 get_date
 
+# Default paths (can be overridden by environment variables)
 EMACS_PATH=${EMACS_PATH:-"/usr/local/bin/emacs"}
-EMACS_HOME=${EMACS_HOME:-"~/.emacs.d"}
+EMACS_HOME=${EMACS_HOME:-"$HOME/.emacs.d"}
+EMACS_REPO=${EMACS_REPO:-"git@github.com:abhishekamralkar/myemacs.git"}
 
-get_emacs() {
-    if [ -d "$EMACS_HOME" ]; then
-      rm -rf $EMACS_HOME
-      #install_started
-      #git clone git@github.com:abhishekamralkar/emacs.d.git ~/.emacs.d
-      #install_completed
-    else 
-      #install_started
-      #git clone git@github.com:abhishekamralkar/emacs.d.git ~/.emacs.d
-      #install_completed
-      echo "hello"
+# Function to check if Emacs is installed
+check_emacs_installed() {
+    if ! command -v "$EMACS_PATH" &> /dev/null; then
+        echo "Emacs is not installed. Please install Emacs before running this script."
+        exit 1
     fi
 }
 
-misc() {
-  mkdir -p ~/.emacs.d/themes 
-  cd ~/.emacs.d/themes/ && wget https://raw.githubusercontent.com/greduan/emacs-theme-gruvbox/master/gruvbox-theme.el
-  cd ~/.emacs.d/lisp/ && wget https://raw.githubusercontent.com/abhishekamralkar/configs/master/emacs/init-local.el
-  cd ~/.emacs.d/lisp/ && wget https://raw.githubusercontent.com/abhishekamralkar/configs/master/emacs/init-go.el
-  git clone git@github.com:jwiegley/use-package.git ~/.emacs.d/site-lisp/use-package
+# Function to clone or update Emacs configuration
+setup_emacs_config() {
+    echo "Setting up Emacs configuration..."
+    if [ -d "$EMACS_HOME" ]; then
+        echo "Existing Emacs configuration found at $EMACS_HOME. Removing it..."
+        rm -rf "$EMACS_HOME" || { echo "Failed to remove existing Emacs configuration. Exiting."; exit 1; }
+    fi
+
+    echo "Cloning Emacs configuration from $EMACS_REPO..."
+    git clone "$EMACS_REPO" "$EMACS_HOME" || { echo "Failed to clone Emacs configuration. Exiting."; exit 1; }
+    echo "Emacs configuration successfully cloned to $EMACS_HOME."
 }
 
-main () {
-    get_emacs
-    misc
+# Main function to orchestrate the setup
+main() {
+    check_emacs_installed
+    setup_emacs_config
 }
 
 main
