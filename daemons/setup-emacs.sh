@@ -18,7 +18,7 @@ get_release
 get_date
 
 # Default paths (can be overridden by environment variables)
-EMACS_PATH=${EMACS_PATH:-"/usr/local/bin/emacs"}
+EMACS_PATH=${EMACS_PATH:-"/usr/bin/emacs"}
 EMACS_HOME=${EMACS_HOME:-"$HOME/.emacs.d"}
 EMACS_REPO=${EMACS_REPO:-"git@github.com:abhishekamralkar/myemacs.git"}
 
