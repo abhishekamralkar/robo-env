@@ -1,6 +1,17 @@
 #!/bin/bash
+# Author: Abhishek Anand Amralkar
+# This script installs Nerd Fonts.
 
-# Array of fonts to be installed
+set -o errexit
+set -o pipefail
+set -o nounset
+
+unset CDPATH
+CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+NERD_FONTS_VERSION="${NERD_FONTS_VERSION:-3.3.0}"
+FONTS_DIR="${HOME}/.local/share/fonts"
+
 declare -a fonts=(
     Meslo
     0xProto
@@ -11,44 +22,38 @@ declare -a fonts=(
     IosevkaTerm
 )
 
-version='2.1.0'
-fonts_dir="${HOME}/.local/share/fonts"
+mkdir -p "${FONTS_DIR}"
 
-# Create fonts directory if it doesn't exist
-if [[ ! -d "$fonts_dir" ]]; then
-    mkdir -p "$fonts_dir"
-fi
-
-# Download and install each font
 for font in "${fonts[@]}"; do
+    font_dir="${FONTS_DIR}/${font}"
+
+    if [[ -d "${font_dir}" ]]; then
+        echo "Font ${font} is already installed. Skipping..."
+        continue
+    fi
+
     zip_file="${font}.zip"
-    download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/${zip_file}"
-    font_dir="${fonts_dir}/${font}"
+    download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${NERD_FONTS_VERSION}/${zip_file}"
 
-    # Skip if font is already installed
-    if [[ -d "$font_dir" ]]; then
-        echo "Font $font is already installed. Skipping..."
+    echo "Downloading ${font} from ${download_url}..."
+    if ! wget -q "${download_url}" -O "${zip_file}"; then
+        echo "Failed to download ${zip_file}. Skipping..."
         continue
     fi
 
-    echo "Downloading $download_url"
-    if ! wget -q "$download_url" -O "$zip_file"; then
-        echo "Failed to download $zip_file. Skipping..."
+    echo "Installing ${font}..."
+    mkdir -p "${font_dir}"
+    if ! unzip -q "${zip_file}" -d "${font_dir}"; then
+        echo "Failed to unzip ${zip_file}. Skipping..."
+        rm -f "${zip_file}"
+        rmdir "${font_dir}" 2>/dev/null || true
         continue
     fi
 
-    echo "Installing $font..."
-    if ! unzip -q "$zip_file" -d "$fonts_dir"; then
-        echo "Failed to unzip $zip_file. Skipping..."
-        rm -f "$zip_file"
-        continue
-    fi
-
-    rm "$zip_file"
+    rm -f "${zip_file}"
 done
 
-# Remove Windows-compatible font files
-find "$fonts_dir" -name '*Windows Compatible*' -delete
+find "${FONTS_DIR}" -name '*Windows Compatible*' -delete
 
-# Refresh font cache
 fc-cache -fv
+echo "Font installation completed."

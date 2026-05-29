@@ -1,19 +1,35 @@
 #!/bin/bash
+# Author: Abhishek Anand Amralkar
+# This script installs Go.
 
 set -o errexit
 set -o pipefail
 set -o nounset
 
-# Specify the Go version (can be overridden by an environment variable)
-GO_VERSION="${GO_VERSION:-1.24.1}"
+unset CDPATH
+CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Specify the installation directory (can be overridden by an environment variable)
+source "${CURDIR}/helper-func.sh"
+
+SETUP_DIR=$(pwd)
+package=$(get_script_name)
+get_release
+get_date
+
+GO_VERSION="${GO_VERSION:-1.24.3}"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local}"
 
-# URL to download the Go binary
-GO_URL="https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz"
+detect_arch() {
+    local machine
+    machine=$(uname -m)
+    case "$machine" in
+        x86_64)  GO_ARCH="amd64" ;;
+        aarch64) GO_ARCH="arm64" ;;
+        armv6l)  GO_ARCH="armv6l" ;;
+        *)       echo "Unsupported architecture: $machine"; exit 1 ;;
+    esac
+}
 
-# Function to detect the user's shell and configuration file
 detect_shell() {
     local shell_name
     shell_name=$(basename "$SHELL")
@@ -27,19 +43,26 @@ detect_shell() {
     fi
 }
 
-# Function to download and install Go
 install_go() {
-    echo "Downloading Go ${GO_VERSION}..."
-    curl -LO "${GO_URL}" || { echo "Failed to download Go. Exiting."; exit 1; }
+    if command -v go &> /dev/null; then
+        echo "Go is already installed: $(go version)"
+        return
+    fi
+
+    local go_url="https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+    local archive="go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+
+    install_started
+    echo "Downloading Go ${GO_VERSION} (${GO_ARCH})..."
+    curl -LO "${go_url}" || { echo "Failed to download Go. Exiting."; exit 1; }
 
     echo "Installing Go ${GO_VERSION} to ${INSTALL_DIR}..."
-    sudo tar -C "${INSTALL_DIR}" -xzf "go${GO_VERSION}.linux-amd64.tar.gz" || { echo "Failed to extract Go archive. Exiting."; exit 1; }
-
-    # Cleanup the downloaded archive
-    rm -f "go${GO_VERSION}.linux-amd64.tar.gz"
+    sudo rm -rf "${INSTALL_DIR}/go"
+    sudo tar -C "${INSTALL_DIR}" -xzf "${archive}" || { echo "Failed to extract Go archive. Exiting."; exit 1; }
+    rm -f "${archive}"
+    install_completed
 }
 
-# Function to set up environment variables
 setup_environment() {
     echo "Setting up environment variables in ${CONFIG_FILE}..."
     if ! grep -q "${INSTALL_DIR}/go/bin" "${CONFIG_FILE}"; then
@@ -49,30 +72,24 @@ setup_environment() {
         echo "export GOPATH=\$HOME/go" >> "${CONFIG_FILE}"
         echo "export PATH=\$PATH:\$GOPATH/bin" >> "${CONFIG_FILE}"
     fi
-
-    # Apply changes to the current shell session
-    echo "Applying changes to the current shell session..."
-    source "${CONFIG_FILE}"
 }
 
-# Function to verify the installation
 verify_installation() {
+    export PATH="$PATH:${INSTALL_DIR}/go/bin"
     if command -v go &> /dev/null; then
-        echo "Go version: $(go version)"
-        echo "Go ${GO_VERSION} has been installed successfully!"
+        echo "Go installed: $(go version)"
     else
         echo "Go installation failed. Please check your setup."
         exit 1
     fi
 }
 
-# Main function to orchestrate the setup
 main() {
+    detect_arch
     detect_shell
     install_go
     setup_environment
     verify_installation
 }
 
-# Execute the main function
 main

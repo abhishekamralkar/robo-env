@@ -9,7 +9,7 @@ set -o nounset
 unset CDPATH
 CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source ./helper-func.sh
+source "${CURDIR}/helper-func.sh"
 
 # Pick script location
 SETUP_DIR=$(pwd)
@@ -45,15 +45,22 @@ install_rust_utilities() {
     echo "All selected Rust utilities have been installed."
 }
 
-# Function to ensure Cargo's bin directory is in the PATH
 ensure_cargo_path() {
-    if ! echo "$PATH" | grep -q "$HOME/.cargo/bin"; then
-        echo "Adding Cargo's bin directory to PATH..."
-        echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
-        source ~/.zshrc
+    local shell_name config_file
+    shell_name=$(basename "$SHELL")
+    case "$shell_name" in
+        zsh)  config_file="$HOME/.zshrc" ;;
+        bash) config_file="$HOME/.bashrc" ;;
+        *)    echo "Unknown shell: $shell_name. Add \$HOME/.cargo/bin to PATH manually."; return ;;
+    esac
+
+    if ! grep -q '\.cargo/bin' "${config_file}" 2>/dev/null; then
+        echo "Adding Cargo's bin directory to PATH in ${config_file}..."
+        echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "${config_file}"
     else
         echo "Cargo's bin directory is already in PATH."
     fi
+    export PATH="$HOME/.cargo/bin:$PATH"
 }
 
 # Main function to orchestrate the setup

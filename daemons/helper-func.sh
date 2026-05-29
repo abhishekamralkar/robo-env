@@ -24,10 +24,9 @@ install_completed() {
 }
 
 get_release() {
-    # Extract OS release name
     local os_info
-    os_info=$(cat /etc/os-release | awk -F '=' '/^NAME/{print $2}' | awk '{print $1}' | tr -d '"')
-    os_release="${os_info:-Unknown}" # Default to "Unknown" if empty
+    os_info=$(awk -F '=' '/^NAME/{print $2}' /etc/os-release | awk '{print $1}' | tr -d '"')
+    os_release="${os_info:-Unknown}"
 }
 
 get_date() {
@@ -43,7 +42,6 @@ get_script_name() {
 }
 
 get_retval() {
-    # Check the return value of the last command
     local retVal=$?
     if [ $retVal -ne 0 ]; then
         echo "Error: Command failed with exit code $retVal"

@@ -9,7 +9,7 @@ set -o nounset
 unset CDPATH
 CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source ./helper-func.sh
+source "${CURDIR}/helper-func.sh"
 
 # Pick script location
 SETUP_DIR=$(pwd)

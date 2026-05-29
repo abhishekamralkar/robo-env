@@ -9,38 +9,47 @@ set -o nounset
 unset CDPATH
 CURDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source ./helper-func.sh
+source "${CURDIR}/helper-func.sh"
 
-# Pick script location
 SETUP_DIR=$(pwd)
 package=$(get_script_name)
 get_release
 get_date
 
-# Function to install VS Code on Red Hat-based systems
+check_vscode_installed() {
+    if command -v code &> /dev/null; then
+        echo "VS Code is already installed: $(code --version | head -1)"
+        exit 0
+    fi
+}
+
 install_vscode_redhat() {
     echo "Installing Visual Studio Code on Red Hat-based system..."
     install_started
-    local vscode_rpm="https://az764295.vo.msecnd.net/stable/3b889b090b5ad5793f524b5d1d39fda662b96a2a/code-1.69.2-1658162074.el7.x86_64.rpm"
-    wget -q "$vscode_rpm" -O vscode.rpm || { echo "Failed to download VS Code RPM package. Exiting."; exit 1; }
-    sudo dnf install -y vscode.rpm || { echo "Failed to install VS Code RPM package. Exiting."; exit 1; }
-    rm -f vscode.rpm
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc || { echo "Failed to import Microsoft GPG key. Exiting."; exit 1; }
+    cat <<EOF | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
+[code]
+name=Visual Studio Code
+baseurl=https://packages.microsoft.com/yumrepos/vscode
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+EOF
+    sudo dnf install -y code || { echo "Failed to install VS Code. Exiting."; exit 1; }
     install_completed
 }
 
-# Function to install VS Code on Debian-based systems
 install_vscode_debian() {
     echo "Installing Visual Studio Code on Debian-based system..."
     install_started
-    local vscode_deb="https://vscode.download.prss.microsoft.com/dbazure/download/stable/ddc367ed5c8936efe395cffeec279b04ffd7db78/code_1.98.2-1741788907_amd64.deb"
-    wget -q "$vscode_deb" -O vscode.deb || { echo "Failed to download VS Code DEB package. Exiting."; exit 1; }
-    sudo dpkg -i vscode.deb || { echo "Failed to install VS Code DEB package. Exiting."; exit 1; }
-    sudo apt-get -f install -y || { echo "Failed to fix dependencies. Exiting."; exit 1; }
-    rm -f vscode.deb
+    sudo apt-get install -y wget gpg || { echo "Failed to install prerequisites. Exiting."; exit 1; }
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-archive-keyring.gpg > /dev/null || { echo "Failed to import Microsoft GPG key. Exiting."; exit 1; }
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null || { echo "Failed to add VS Code repository. Exiting."; exit 1; }
+    sudo apt-get update -y || { echo "Failed to update package lists. Exiting."; exit 1; }
+    sudo apt-get install -y code || { echo "Failed to install VS Code. Exiting."; exit 1; }
     install_completed
 }
 
-# Function to detect the OS and install VS Code
 install_vscode() {
     if [ -f /etc/redhat-release ]; then
         install_vscode_redhat
@@ -52,8 +61,8 @@ install_vscode() {
     fi
 }
 
-# Main function to orchestrate the setup
 main() {
+    check_vscode_installed
     install_vscode
 }
 
