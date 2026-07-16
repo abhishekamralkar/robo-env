@@ -17,7 +17,7 @@ install_fzf() {
 
     echo "Installing fzf..."
     git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf" || { echo "Failed to clone fzf. Exiting."; exit 1; }
-    "${HOME}/.fzf/install" --all --no-update-rc || { echo "Failed to install fzf. Exiting."; exit 1; }
+    "${HOME}/.fzf/install" --all --update-rc || { echo "Failed to install fzf. Exiting."; exit 1; }
     echo "FZF installation completed."
 }
 

@@ -65,8 +65,8 @@ ensure_cargo_path() {
 
 # Main function to orchestrate the setup
 main() {
-    install_rust
     ensure_cargo_path
+    install_rust
     install_rust_utilities
     echo "Rust and utilities setup completed successfully."
 }

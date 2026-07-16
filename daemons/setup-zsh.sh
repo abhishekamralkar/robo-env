@@ -42,9 +42,23 @@ install_zsh() {
 # Function to install Oh My Posh
 install_oh_my_posh() {
     echo "Installing Oh My Posh..."
-    mkdir -p ~/Bin
-    curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/Bin || { echo "Failed to install Oh My Posh. Exiting."; exit 1; }
+    mkdir -p ~/bin
+    curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/bin || { echo "Failed to install Oh My Posh. Exiting."; exit 1; }
     echo "Oh My Posh installation completed."
+}
+
+# Function to ensure ~/bin is on PATH and Oh My Posh is initialized in zsh
+configure_zshrc() {
+    local zshrc="$HOME/.zshrc"
+    touch "$zshrc"
+
+    if ! grep -qF 'HOME/bin' "$zshrc"; then
+        echo 'export PATH="$HOME/bin:$PATH"' >> "$zshrc"
+    fi
+
+    if ! grep -qF 'oh-my-posh init' "$zshrc"; then
+        echo 'eval "$(oh-my-posh init zsh)"' >> "$zshrc"
+    fi
 }
 
 # Function to set Zsh as the default shell
@@ -62,6 +76,7 @@ set_default_shell() {
 main() {
     install_zsh
     install_oh_my_posh
+    configure_zshrc
     set_default_shell
     echo "Zsh setup completed successfully."
 }
