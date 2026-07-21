@@ -18,7 +18,7 @@ get_release
 get_date
 
 # List of common packages to install
-common_packages=("vim" "emacs" "curl" "wget" "git" "tmux" "terminator" "make" "gcc" "perl" "unzip" "rlwrap" "zsh" "python3-pip" "htop" "rsync" "python3-setuptools" "stow" "tldr" "fonts-firacode")
+common_packages=("vim" "emacs" "curl" "wget" "git" "tmux" "terminator" "make" "gcc" "perl" "unzip" "rlwrap" "zsh" "python3-pip" "htop" "rsync" "python3-setuptools" "stow" "tealdeer" "fonts-firacode")
 
 # Function to install common packages on Red Hat-based systems
 install_common_packages_redhat() {

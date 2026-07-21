@@ -21,9 +21,9 @@ get_date
 install_chrome_redhat() {
     echo "Detected Red Hat-based system. Installing Google Chrome..."
     install_started
-    wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm || { echo "Failed to download Chrome RPM. Exiting."; exit 1; }
-    sudo dnf install -y google-chrome-stable_current_x86_64.rpm || { echo "Failed to install Chrome RPM. Exiting."; exit 1; }
-    rm -f google-chrome-stable_current_x86_64.rpm
+    wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.rpm || { echo "Failed to download Chrome RPM. Exiting."; exit 1; }
+    sudo dnf install -y google-chrome-stable_current_amd64.rpm || { echo "Failed to install Chrome RPM. Exiting."; exit 1; }
+    rm -f google-chrome-stable_current_amd64.rpm
     install_completed
 }
 
@@ -31,10 +31,10 @@ install_chrome_redhat() {
 install_chrome_debian() {
     echo "Detected Debian-based system. Installing Google Chrome..."
     install_started
-    wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.deb || { echo "Failed to download Chrome DEB. Exiting."; exit 1; }
-    sudo dpkg -i google-chrome-stable_current_x86_64.deb || { echo "Failed to install Chrome DEB. Exiting."; exit 1; }
+    wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb || { echo "Failed to download Chrome DEB. Exiting."; exit 1; }
+    sudo dpkg -i google-chrome-stable_current_amd64.deb || { echo "Failed to install Chrome DEB. Exiting."; exit 1; }
     sudo apt-get -f install -y || { echo "Failed to fix dependencies. Exiting."; exit 1; }
-    rm -f google-chrome-stable_current_x86_64.deb
+    rm -f google-chrome-stable_current_amd64.deb
     install_completed
 }
 
