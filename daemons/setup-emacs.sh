@@ -38,9 +38,11 @@ setup_emacs_config() {
         rm -rf "$EMACS_HOME" || { echo "Failed to remove existing Emacs configuration. Exiting."; exit 1; }
     fi
 
+    install_started
     echo "Cloning Emacs configuration from $EMACS_REPO..."
     git clone "$EMACS_REPO" "$EMACS_HOME" || { echo "Failed to clone Emacs configuration. Exiting."; exit 1; }
     echo "Emacs configuration successfully cloned to $EMACS_HOME."
+    install_completed
 }
 
 # Main function to orchestrate the setup

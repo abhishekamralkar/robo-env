@@ -16,7 +16,11 @@ package=$(get_script_name)
 get_release
 get_date
 
-GO_VERSION="${GO_VERSION:-1.24.3}"
+get_latest_go_version() {
+    curl -fsSL "https://go.dev/VERSION?m=text" | head -n1 | sed 's/^go//'
+}
+
+GO_VERSION="${GO_VERSION:-$(get_latest_go_version)}"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local}"
 
 detect_arch() {
@@ -45,8 +49,13 @@ detect_shell() {
 
 install_go() {
     if command -v go &> /dev/null; then
-        echo "Go is already installed: $(go version)"
-        return
+        local installed_version
+        installed_version=$(go version | awk '{print $3}' | sed 's/^go//')
+        if [[ "${installed_version}" == "${GO_VERSION}" ]]; then
+            echo "Go is already up to date: $(go version)"
+            return
+        fi
+        echo "Installed Go version (${installed_version}) differs from latest (${GO_VERSION}). Upgrading..."
     fi
 
     local go_url="https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"

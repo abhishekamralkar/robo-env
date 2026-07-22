@@ -91,7 +91,7 @@ Before using the scripts in this repository, ensure the following:
 Each script allows customization via environment variables. For example:
 
 #### `setup-emacs.sh`:
-- `EMACS_PATH`: Path to the Emacs binary (default: `/usr/local/bin/emacs`).
+- `EMACS_PATH`: Path to the Emacs binary (default: `/usr/bin/emacs`).
 - `EMACS_HOME`: Path to the Emacs configuration directory (default: `~/.emacs.d`).
 - `EMACS_REPO`: Git repository for Emacs configuration (default: `git@github.com:abhishekamralkar/myemacs.git`).
 
