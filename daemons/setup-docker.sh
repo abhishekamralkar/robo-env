@@ -51,17 +51,25 @@ install_docker_debian() {
     echo "Detected Debian-based system. Installing Docker..."
     install_started
 
+    # Determine the actual distro (debian vs ubuntu) and its codename so the
+    # correct Docker apt repo is used; hardcoding "ubuntu" breaks on Debian
+    # hosts since their codenames (e.g. trixie) don't exist in Ubuntu's repo.
+    local distro_id
+    local distro_codename
+    distro_id=$(. /etc/os-release && echo "${ID}")
+    distro_codename=$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+
     # Install required packages
     sudo apt-get update -y || { echo "Failed to update package lists. Exiting."; exit 1; }
     sudo apt-get install -y ca-certificates curl gnupg || { echo "Failed to install required packages. Exiting."; exit 1; }
 
     # Add Docker's official GPG key
     sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc || { echo "Failed to download Docker GPG key. Exiting."; exit 1; }
+    sudo curl -fsSL "https://download.docker.com/linux/${distro_id}/gpg" -o /etc/apt/keyrings/docker.asc || { echo "Failed to download Docker GPG key. Exiting."; exit 1; }
     sudo chmod a+r /etc/apt/keyrings/docker.asc
 
     # Add Docker repository
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/${distro_id} ${distro_codename} stable" | \
         sudo tee /etc/apt/sources.list.d/docker.list > /dev/null || { echo "Failed to add Docker repository. Exiting."; exit 1; }
 
     # Install Docker
